@@ -57,4 +57,38 @@
 
         // Floating animation for profile image
         document.querySelector('.profile-img').classList.add('floating');
+// My Books fade-in + simple intersection observer for nicer load
+document.addEventListener("DOMContentLoaded", () => {
+    // existing scripts may be here — do not overwrite; append below
+    const bookCards = document.querySelectorAll(".book-card");
+    bookCards.forEach(card => {
+        card.style.opacity = "0";
+        card.style.transform = "translateY(20px)";
+    });
+
+    // use IntersectionObserver if available for performance
+    if ("IntersectionObserver" in window) {
+        const obs = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.transition = "all 0.6s cubic-bezier(.2,.9,.3,1)";
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        bookCards.forEach(card => obs.observe(card));
+    } else {
+        // fallback: simple staggered reveal
+        bookCards.forEach((card, i) => {
+            setTimeout(() => {
+                card.style.transition = "all 0.6s ease";
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+            }, i * 160);
+        });
+    }
+});
     
